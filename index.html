@@ -6,16 +6,23 @@
 </head>
 
 <body>
-<div class="container">    <ul class="comments"></ul>
-    <div class="add-form">
+<div class="container">
+    <div class="loader">
+        <div class="loader-text">Загрузка...</div>
+    </div>    
+    <ul class="comments"></ul>
+    <form class="add-form">
         <label>
             <input type="text" class="add-form-name" placeholder="Введите ваше имя"/>
         </label>
         <textarea class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
         <div class="add-form-row">
-            <button class="add-form-button">Написать</button>
+            <button class="add-form-button" type="submit">Написать</button>
+            <div class="add-form-loader">
+                <div class="loader-text">Комментарий добавляется...</div>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 
 <script src="index.js"></script>

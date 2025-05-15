@@ -6,21 +6,24 @@ const domElements = {
     nameInput: document.querySelector(".add-form-name"),
     commentInput: document.querySelector(".add-form-text"),
     submitButton: document.querySelector(".add-form-button"),
+    addForm: document.querySelector(".add-form"),
+    loader: document.querySelector(".loader"),
+    addFormLoader: document.querySelector(".add-form-loader"),
 };
 
 let commentData = [];
 
-const escapeHTML = (text) => text.replace(/</g, "<").replace(/>/g, ">");
+const escapeHTML = (text) => text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const formatCommentDate = (isoDate) => {
     const date = new Date(isoDate);
-    return `${date.toLocaleString("ru-RU", {
+    return date.toLocaleString("ru-RU", {
         day: "2-digit",
         month: "2-digit",
         year: "2-digit",
         hour: "2-digit",
         minute: "2-digit",
-    })}`;
+    });
 };
 
 const renderCommentList = () => {
@@ -44,6 +47,7 @@ const renderCommentList = () => {
         </li>`
         )
         .join("");
+
     domElements.commentsList.querySelectorAll(".like-button").forEach((button) =>
         button.addEventListener("click", (event) => {
             event.stopPropagation();
@@ -53,6 +57,7 @@ const renderCommentList = () => {
             renderCommentList();
         })
     );
+
     domElements.commentsList.querySelectorAll(".comment").forEach((commentElement) =>
         commentElement.addEventListener("click", () => {
             const index = commentElement.dataset.index;
@@ -62,42 +67,103 @@ const renderCommentList = () => {
     );
 };
 
-const fetchCommentData = async () => {
-    try {
-        const response = await fetch(COMMENTS_API_URL);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const { comments: fetchedComments } = await response.json();
-        commentData = fetchedComments.map((comment) => ({
-            name: comment.author.name,
-            date: formatCommentDate(comment.date),
-            text: comment.text,
-            likes: 0,
-            isLiked: false,
-        }));
-        renderCommentList();
-    } catch (error) {
-        console.error("Fetch error:", error);
-        alert(`Не удалось загрузить комментарии: ${error.message}`);
-    }
+const toggleLoader = (show) => {
+    domElements.loader.classList.toggle('loader-active', show);
 };
 
-const submitNewComment = async () => {
+const toggleAddFormLoader = (show) => {
+    domElements.addForm.style.display = show ? 'none' : 'flex';
+    domElements.addFormLoader.classList.toggle('loader-active', show);
+    domElements.submitButton.disabled = show;
+};
+
+const getComments = () => {
+    return fetch(COMMENTS_API_URL)
+        .then((response) => {
+            if (!response.ok) {
+                if (response.status >= 500) {
+                    throw new Error("Сервер сломался, попробуй позже");
+                }
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            commentData = data.comments.map((comment) => ({
+                name: comment.author.name,
+                date: formatCommentDate(comment.date),
+                text: comment.text,
+                likes: 0,
+                isLiked: false,
+            }));
+            renderCommentList();
+        });
+};
+
+const initComments = () => {
+    toggleLoader(true);
+    return getComments()
+        .catch((error) => {
+            console.error("Fetch error:", error);
+            if (!window.navigator.onLine) {
+                alert("Кажется, у вас сломался интернет, попробуйте позже");
+            } else {
+                alert(error.message);
+            }
+        })
+        .finally(() => {
+            toggleLoader(false);
+        });
+};
+
+const submitNewComment = (event) => {
+    event.preventDefault();
     const name = domElements.nameInput.value.trim();
     const text = domElements.commentInput.value.trim();
-    try {
-        const response = await fetch(COMMENTS_API_URL, {
-            method: "POST",
-            body: JSON.stringify({ name, text }),
-        });
-        if (!response.ok) throw new Error((await response.json()).error);
-        await fetchCommentData();
-        domElements.nameInput.value = "";
-        domElements.commentInput.value = "";
-    } catch (error) {
-        console.error("Post error:", error);
-        alert(`Ошибка добавления: ${error.message}`);
+
+    if (name.length < 3 || text.length < 3) {
+        alert("Имя и комментарий должны быть не короче 3 символов");
+        return;
     }
+
+    toggleAddFormLoader(true);
+
+    fetch(COMMENTS_API_URL, {
+        method: "POST",
+        body: JSON.stringify({ 
+            name, 
+            text,
+            forceError: true
+        }),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                if (response.status >= 500) {
+                    throw new Error("Сервер сломался, попробуй позже");
+                }
+                return response.json().then(error => {
+                    throw new Error(error.error || "Некорректные данные");
+                });
+            }
+            return response.json();
+        })
+        .then(() => getComments())
+        .then(() => {
+            domElements.nameInput.value = "";
+            domElements.commentInput.value = "";
+        })
+        .catch((error) => {
+            console.error("Post error:", error);
+            if (!window.navigator.onLine) {
+                alert("Кажется, у вас сломался интернет, попробуйте позже");
+            } else {
+                alert(error.message);
+            }
+        })
+        .finally(() => {
+            toggleAddFormLoader(false);
+        });
 };
 
-domElements.submitButton.addEventListener("click", submitNewComment);
-fetchCommentData();
+domElements.addForm.addEventListener("submit", submitNewComment);
+initComments();
