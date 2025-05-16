@@ -9,7 +9,13 @@ const domElements = {
     addForm: document.querySelector(".add-form"),
     loader: document.querySelector(".loader"),
     addFormLoader: document.querySelector(".add-form-loader"),
+    loadingMessage: document.createElement("div")
 };
+
+// Настраиваем элемент с сообщением
+domElements.loadingMessage.textContent = "Комментарий добавляется...";
+domElements.loadingMessage.style.cssText = "text-align: center; margin: 10px 0; display: none;";
+domElements.addForm.parentElement.insertBefore(domElements.loadingMessage, domElements.addForm.nextSibling);
 
 let commentData = [];
 
@@ -74,6 +80,7 @@ const toggleLoader = (show) => {
 const toggleAddFormLoader = (show) => {
     domElements.addForm.style.display = show ? 'none' : 'flex';
     domElements.addFormLoader.classList.toggle('loader-active', show);
+    domElements.loadingMessage.style.display = show ? 'block' : 'none';
     domElements.submitButton.disabled = show;
 };
 
@@ -132,7 +139,8 @@ const submitNewComment = (event) => {
         method: "POST",
         body: JSON.stringify({ 
             name, 
-            text
+            text,
+            forceError: true
         }),
     })
         .then((response) => {
