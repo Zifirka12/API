@@ -132,8 +132,7 @@ const submitNewComment = (event) => {
         method: "POST",
         body: JSON.stringify({ 
             name, 
-            text,
-            forceError: true
+            text
         }),
     })
         .then((response) => {
