@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Авторизация</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="style.css"/>
+    
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-header">
+            <h1>Авторизация</h1>
+            <p>Войдите или зарегистрируйтесь, чтобы оставлять комментарии</p>
+        </div>
+        <div class="auth-form">
+            <input type="text" id="loginInput" class="input" placeholder="Логин"/>
+            <input type="password" id="passwordInput" class="input" placeholder="Пароль"/>
+            <div class="auth-buttons">
+                <button id="loginButton" class="add-comment-button">Войти</button>
+                <button id="registerButton" class="add-comment-button">Зарегистрироваться</button>
+            </div>
+            <div id="authMessage" class="auth-message"></div>
+        </div>
+        <a href="coment.html" class="back-link">Вернуться к комментариям</a>
+    </div>
+    <script type="module" src="../modules/auth.js"></script>
+</body>
+</html>

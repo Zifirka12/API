@@ -1,62 +1,82 @@
-// modules/comments.js
 import { API_URL, getToken } from './auth.js';
 
 export let userComments = [];
+
 export const updateComments = (newComments) => {
-  userComments = newComments;
+    userComments = newComments;
 };
 
 export const getComments = async () => {
-  try {
-    const response = await fetch(API_URL + 'comments', {
-      method: 'GET',
-    });
+    try {
+        const response = await fetch(API_URL + 'comments', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
 
-    if (response.status === 500) {
-      throw new Error('Сервер сломался');
-    }
+        if (!response.ok) {
+            if (response.status === 500) {
+                throw new Error('Сервер сломался');
+            }
+            throw new Error('Ошибка при загрузке комментариев');
+        }
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    if (error.message === 'Failed to fetch') {
-      throw new Error('Проверьте подключение к интернету');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        if (error.message === 'Failed to fetch') {
+            throw new Error('Проверьте подключение к интернету');
+        }
+        throw error;
     }
-    throw error;
-  }
 };
 
 export const addComment = async (text) => {
-  try {
-    const token = getToken();
-    if (!token) {
-      throw new Error('Необходимо авторизоваться');
-    }
+    try {
+        const token = getToken();
+        console.log('Токен при добавлении комментария:', token); // Для отладки
 
-    const response = await fetch(API_URL + 'comments', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        text,
-      }),
-    });
+        if (!token) {
+            throw new Error('Необходимо авторизоваться');
+        }
 
-    if (response.status === 400) {
-      throw new Error('Имя и комментарий должны быть не короче 3 символов');
-    }
+        if (!text || text.trim().length < 3) {
+            throw new Error('Комментарий должен быть не короче 3 символов');
+        }
 
-    if (response.status === 500) {
-      throw new Error('Сервер сломался');
-    }
+        const response = await fetch(API_URL + 'comments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                text: text.trim()
+            })
+        });
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    if (error.message === 'Failed to fetch') {
-      throw new Error('Проверьте подключение к интернету');
+        const data = await response.json();
+        console.log('Ответ сервера при добавлении комментария:', data); // Для отладки
+
+        if (!response.ok) {
+            if (response.status === 400) {
+                throw new Error(data.error || 'Комментарий должен быть не короче 3 символов');
+            }
+            if (response.status === 401) {
+                throw new Error('Необходимо авторизоваться');
+            }
+            if (response.status === 500) {
+                throw new Error('Сервер сломался');
+            }
+            throw new Error(data.error || 'Ошибка при добавлении комментария');
+        }
+
+        return data;
+    } catch (error) {
+        if (error.message === 'Failed to fetch') {
+            throw new Error('Проверьте подключение к интернету');
+        }
+        throw error;
     }
-    throw error;
-  }
 };

@@ -86,11 +86,6 @@ body {
   align-items: center;
 }
 
-.like-button {
-  all: unset;
-  cursor: pointer;
-  background: transparent;
-}
 
 .likes-counter {
   font-size: 26px;
@@ -151,6 +146,9 @@ body {
   background-repeat: no-repeat;
   width: 22px;
   height: 22px;
+  border: none;
+  background-color: #501bb1;
+
 }
 
 .-active-like {
@@ -225,4 +223,141 @@ body {
   margin-top: 10px;
   text-align: center;
   color: #28a745;
+}
+
+.auth-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    max-width: 400px;
+    margin: 0 auto 20px;
+}
+
+.auth-form h3 {
+    margin: 0 0 20px;
+    text-align: center;
+    color: #333;
+}
+
+.auth-form .input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.auth-form .add-comment-button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.response-message {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 20px;
+    text-align: center;
+}
+
+.auth-container .add-comment-button {
+    width: 200px;
+    margin: 0 auto;
+}
+
+.auth-message {
+  text-align: center;
+  margin: 20px 0;
+  color: #ffffff;
+}
+
+.auth-message a {
+  color: #bcec30;
+  text-decoration: none;
+}
+
+.auth-message a:hover {
+  text-decoration: underline;
+}
+
+.input[readonly] {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #fff;
+}
+
+.container {
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.auth-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.auth-message {
+    font-size: 16px;
+    color: #666;
+    margin: 20px 0;
+}
+
+.auth-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 5px 10px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.auth-link:hover {
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+}
+
+.comments {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+.comment-body {
+    margin-bottom: 10px;
+}
+
+.comment-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.likes {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #666;
 }
